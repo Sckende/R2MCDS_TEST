@@ -13,21 +13,27 @@ df1 <-mcds.filter(alcidae, transect.id = "WatchID",
                   sp.field = "Alpha", date.field = "Date")
 ### Run analysis with the MCDS engine.
 ### Here, the 5-minute observation period (WatchID) is used as the sampling unit.
-mod1 <- mcds.wrap.point(df1,SMP_EFFORT="WatchLenKm",
-                  DISTANCE="Distance",SIZE="Count",
-                  units=list(Type="Point",Distance="Radial",
+mod1 <- mcds.wrap.point(df1,
+                  SMP_EFFORT="WatchLenKm",
+                  DISTANCE="Distance",
+                  SIZE="Count",
+                  units=list(Type="Point",
+                             Distance="Radial",
                              Length_units="Kilometers",
                              Distance_units="Meters",
                              Area_units="Square kilometers"),
                   breaks=c(0,50,100,200,300),
                   SMP_LABEL="WatchID",
-                  STR_LABEL="STR_LABEL",STR_AREA="STR_AREA",
+                  STR_LABEL="STR_LABEL",
+                  STR_AREA="STR_AREA",
                   estimator=list(c("HN","CO")),
                   multiplier = c(1, 0, 0),
-                  path="c:/temp/distance",
+                  path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
                   pathMCDS="C:/Program Files (x86)/Distance 7",
                   verbose=FALSE)
 
+
+mod1
 
 
 set.seed(91) 
@@ -70,7 +76,7 @@ mod1 <- mcds.wrap.point(df2,
 
 #### ***** type = "point"
 # voir pour argument multiplier = 1 pour point d'écoute, multiplier = c(2, 0, 0) par défaur 
-# voir pour LENGHT (ligne juste éteinte pour le moment)
+# voir pour Length/MEASURE (ligne juste éteinte pour le moment)
 # Uniformiser les exemples entre packages et appendices du papier
 
 # browser() permet de s'arreter dans le code de la fonction# Permet de rentrer dans l'environnement de la fonction
