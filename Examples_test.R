@@ -29,6 +29,7 @@ mod1 <- mcds.wrap.point(df1,SMP_EFFORT="WatchLenKm",
                   verbose=FALSE)
 
 
+
 set.seed(91) 
 library(R2MCDS) 
 ### Import and filter data 
@@ -70,7 +71,6 @@ mod1 <- mcds.wrap.point(df2,
 #### ***** type = "point"
 # voir pour argument multiplier = 1 pour point d'écoute, multiplier = c(2, 0, 0) par défaur 
 # voir pour LENGHT (ligne juste éteinte pour le moment)
-# Verbose bug - impossible de printer avec cat () si input est une liste
 # Uniformiser les exemples entre packages et appendices du papier
 
 # browser() permet de s'arreter dans le code de la fonction# Permet de rentrer dans l'environnement de la fonction
