@@ -359,7 +359,11 @@ mcds.wrap.point <-
       opts2<-list()
       opts2["Options;"]<-""
       opts2["Type="] <- paste(units$Type,";",sep="")
-      #opts2["Length /Measure="] <- paste("'",units$Length_units,"';",sep="")
+      
+      if(units$Type=="Line"){
+      opts2["Length /Measure="] <- paste("'",units$Length_units,"';",sep="")
+      }
+      
       if(units$Distance=="Perp"){
         opts2["Distance=Perp /Measure="] <- paste("'",units$Distance_units,"';",sep="")    
       }else{
