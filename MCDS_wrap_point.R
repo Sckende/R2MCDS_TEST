@@ -527,6 +527,7 @@ mcds.wrap.point <-
       ### running distance
       run.cmd <- vector(mode="list",length=n.model)
       for(j in 1:n.model){
+        if(!file.exist())
         cmd<-paste(shQuote(file.path(pathMCDS,"MCDS"))," 0, ",shQuote(file.path(path,inp.file[j])),sep="")
         run.cmd[j] <- try(system(cmd,wait=TRUE,ignore.stdout=FALSE,ignore.stderr=FALSE,invisible=TRUE), silent = TRUE)
       }
