@@ -163,7 +163,8 @@ mcds.wrap.point <-
            detection="All", 
            monotone="Strict",
            estimator=NULL,
-           multiplier=c(2,0,0), 
+           #multiplier=c(2,0,0), 
+           multiplier=NULL,
            empty=NULL,
            verbose=FALSE
   ){
@@ -234,9 +235,14 @@ mcds.wrap.point <-
       }   
     }
     
-    # Automatic values for multiplier argument when Type = Point or Cue
-    if(!units$Type == "Line"){
-      multiplier = c(1, 0, 0)
+    # Automatic values for multiplier argument depending on the type argument
+    if(is.null(multiplier)){
+      if(units$Type == "Line"){
+        multiplier <- c(2, 0, 0)
+      }else{
+          multiplier <- c(1, 0, 0)
+        }
+      
     }
     
     # this recursively fits a model to get an estimate of p for a rarer species
