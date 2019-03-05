@@ -54,6 +54,7 @@ listmod <- mcds.wrap.point(df1,
                      STR_LABEL="STR_LABEL",
                      STR_AREA="STR_AREA",
                      estimator = NULL, # function fits all six detection models and returns a distanceList object that contains 6 distanceFit objects
+                     multiplier = c(1, 0, 0),
                      SMP_LABEL="WatchID",
                      path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
                      pathMCDS="C:/Program Files (x86)/Distance 7",
@@ -104,6 +105,7 @@ mod1 <- mcds.wrap.point(df2,
                              Area_units="Square kilometers"),
                   breaks=c(0,50,100,200,300),
                   estimator=list(c("HN","CO")),
+                  multiplier = c(1, 0, 0),
                   factor = c("Observer"), # Covariate
                   monotone = "none", # Important for analysis with covariate
                   lsub=list(Alpha=c("BLKI","GBBG","HERG")), #list of all the species of interest to include in the analysis
@@ -152,6 +154,7 @@ mod2 <- mcds.wrap.point(df2,
                              Area_units="Square kilometers"),
                   breaks=c(0,50,100,200,300),
                   estimator=list(c("HN","CO")),
+                  #multiplier = c(3, 0, 0),
                   lsub=list(Alpha=c("HERG")),
                   rare= list(Alpha=c("RBGU")),
                   split=TRUE,
