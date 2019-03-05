@@ -243,7 +243,8 @@ mcds.wrap.point <-
       arguments[["detection"]]<-"All"
       arguments[["rare"]]<-NULL
       arguments[["verbose"]]<-FALSE
-      premod<-do.call("mcds.wrap",arguments)
+     
+       premod<-do.call("mcds.wrap.point",arguments)
       if(class(premod)=="distanceFit"){
         best.premod <- premod
       }else{
