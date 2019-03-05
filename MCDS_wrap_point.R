@@ -229,6 +229,10 @@ mcds.wrap.point <-
       }   
     }
     
+    # AUtomatic values for multiplier argument when Type = Point or Cue
+    if(!units$Type == "Line"){
+      multiplier = c(1, 0, 0)
+    }
     
     # this recursively fits a model to get an estimate of p for a rarer species
     if(!is.null(rare)){		
@@ -245,7 +249,7 @@ mcds.wrap.point <-
       arguments[["verbose"]]<-FALSE
      
        premod<-do.call("mcds.wrap.point",arguments)
-      if(class(premod)=="distanceFit"){
+      if(class(premod)=="distanceFit"){ # distanceFit = output for a single model. If more than one = distanceList
         best.premod <- premod
       }else{
         best.premod <- keep.best.model(premod)
