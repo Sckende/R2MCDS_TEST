@@ -193,9 +193,14 @@ mcds.wrap.point <-
     if(toupper(units$Distance)%in%c("PERP","RADIAL")==FALSE)
       stop("Type of distance available are: Perp or Radial")
     
-    if(toupper(units$Type)%in%c("POINT", "CUE") & toupper(units$Distance)!=c("RADIAL"))
-      stop("For Points and Cue sampling scheme Distance must be set to radial")
+    # if(toupper(units$Type)%in%c("POINT", "CUE") & toupper(units$Distance)!=c("RADIAL"))
+    #   stop("For Points and Cue sampling scheme Distance must be set to radial")
     
+    # Automatic Distance value when units$Type = Point or Cue
+    if(toupper(units$Type)%in%c("POINT", "CUE") & toupper(units$Distance)!=c("RADIAL")) {
+      units$Distance = c("Radial")
+      warning("Distance value has been replaced from Perp to Radial")
+      }
     
     if(toupper(units$Length_units)%in%c("CENTIMETERS", "METERS", "KILOMETERS", "MILES", 
                                         "INCHES", "FEET", "YARDS", "NAUTICAL MILES")==FALSE)
@@ -229,7 +234,7 @@ mcds.wrap.point <-
       }   
     }
     
-    # AUtomatic values for multiplier argument when Type = Point or Cue
+    # Automatic values for multiplier argument when Type = Point or Cue
     if(!units$Type == "Line"){
       multiplier = c(1, 0, 0)
     }
