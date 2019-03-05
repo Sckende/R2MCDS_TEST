@@ -61,8 +61,7 @@ listmod <- mcds.wrap.point(df1,
 listmod
 summary(listmod[[1]])
 lapply(listmod, summary)
-x11()
-par(mfrow = c(2, 3))
+
 predicted_hist(listmod[[1]])
 lapply(listmod, predicted_hist)
 
