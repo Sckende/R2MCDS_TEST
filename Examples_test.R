@@ -126,6 +126,7 @@ summary(mod1[[1]])
 predicted_hist(mod1[[1]])
 
 #### Example 3 - Rare species analysis ####
+# Example can be found in the supplementary material 2 - Bolduc et al 2017
 # possible to estimate the density and abundance of a rare species by incorporating the detection probability of a similar species into a multiplier
 
 set.seed(91) 
@@ -168,7 +169,73 @@ mod2
 summary(mod2)
 predicted_hist(mod2)
 
+#### Package examples ####
+#### Example 1 ####
+### Simple models without stratification
+### Import and filter data
+set.seed(91)
+library(R2MCDS)
+data(alcidae)
+alcids <- mcds.filter(alcidae,
+                      transect.id = "WatchID",
+                      distance.field = "Distance",
+                      distance.labels = c("A", "B", "C", "D"), 
+                      distance.midpoints = c(25, 75, 150, 250),
+                      effort.field = "WatchLenKm",
+                      lat.field = "LatStart", 
+                      long.field = "LongStart",
+                      sp.field = "Alpha",
+                      date.field = "Date") 
 
+### Run analysis with the MCDS engine. Here, the WatchID is used as the sample.
+dist.out1 <- mcds.wrap(alcids,
+                       SMP_EFFORT="WatchLenKm",
+                       DISTANCE="Distance",
+                       SIZE="Count",
+                       units=list(Type="Line",
+                                  Distance="Perp",
+                                  Length_units="Kilometers",
+                                  Distance_units="Meters",
+                                  Area_units="Square kilometers"),
+                       breaks=c(0,50,100,200,300),
+                       estimator=list(c("HN","CO")),
+                       STR_LABEL="STR_LABEL",
+                       STR_AREA="STR_AREA",
+                       SMP_LABEL="WatchID", 
+                       path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
+                       pathMCDS="C:/Program Files (x86)/Distance 7",
+                       verbose=FALSE)
+
+summary(dist.out1)
+#### Example 2 ####
+### Run separate analysis for years 2008-2009
+dist.out2 <- mcds.wrap(alcids,
+                       SMP_EFFORT="WatchLenKm",
+                       DISTANCE="Distance",SIZE="Count",
+                       units=list(Type="Line",
+                                  Distance="Perp",
+                                  Length_units="Kilometers",
+                                  Distance_units="Meters",
+                                  Area_units="Square kilometers"),
+                       breaks=c(0,50,100,200,300),
+                       estimator=list(c("HN","CO")),
+                       lsub=list(Year=c(2008,2009)),
+                       split=TRUE,
+                       empty="Year",
+                       STR_AREA="STR_AREA",
+                       SMP_LABEL="WatchID", 
+                       path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
+                       pathMCDS="C:/Program Files (x86)/Distance 7",
+                       verbose=FALSE)
+# To fixe the beug example
+utils::View(alcids)
+alcids$Year <- substr(alcids$Date, start = 1, stop = 4)
+alcids$Year <- as.numeric(alcids$Year)
+summary(alcids)
+### Get the names of the different models produced
+names(dist.out2)
+#####summary for the Year 2008 model
+summary(dist.out2[["2008"]])
 
 #### ***** type = "point"
 # voir pour argument multiplier = 1 pour point d'écoute, multiplier = c(2, 0, 0) par défaur 
