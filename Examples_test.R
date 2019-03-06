@@ -38,7 +38,7 @@ mod1 <- mcds.wrap.point(df1,
 # File with errors = "log_xxx.tmp"
 mod1
 summary(mod1)
-predicted_hist(mod1)
+predicted_hist_new(mod1)
 
 ### Run all six detection keys
 listmod <- mcds.wrap.point(df1,
@@ -63,7 +63,7 @@ listmod
 summary(listmod[[1]])
 lapply(listmod, summary)
 
-predicted_hist(listmod[[1]])
+predicted_hist_new(listmod[[6]])
 lapply(listmod, predicted_hist)
 
 ##### Keep the 'best' model in the list
@@ -104,7 +104,8 @@ mod1 <- mcds.wrap.point(df2,
                              Distance_units="Meters",
                              Area_units="Square kilometers"),
                   breaks=c(0,50,100,200,300),
-                  estimator=list(c("HN","CO")),
+                  #estimator=list(c("HN","CO")),
+                  estimator = NULL,
                   multiplier = c(1, 0, 0),
                   factor = c("Observer"), # Covariate
                   monotone = "none", # Important for analysis with covariate
@@ -208,7 +209,14 @@ dist.out1 <- mcds.wrap(alcids,
 
 summary(dist.out1)
 #### Example 2 ####
-### Run separate analysis for years 2008-2009
+### Run separate analysis for years 2007-2008
+# To fixe the beug example
+utils::View(alcids)
+alcids$Year <- substr(alcids$Date, start = 1, stop = 4)
+alcids$Year <- as.numeric(alcids$Year)
+summary(alcids)
+
+
 dist.out2 <- mcds.wrap(alcids,
                        SMP_EFFORT="WatchLenKm",
                        DISTANCE="Distance",SIZE="Count",
@@ -219,7 +227,7 @@ dist.out2 <- mcds.wrap(alcids,
                                   Area_units="Square kilometers"),
                        breaks=c(0,50,100,200,300),
                        estimator=list(c("HN","CO")),
-                       lsub=list(Year=c(2008,2009)),
+                       lsub=list(Year=c(2007,2008)),
                        split=TRUE,
                        empty="Year",
                        STR_AREA="STR_AREA",
@@ -227,16 +235,12 @@ dist.out2 <- mcds.wrap(alcids,
                        path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
                        pathMCDS="C:/Program Files (x86)/Distance 7",
                        verbose=FALSE)
-# To fixe the beug example
-utils::View(alcids)
-alcids$Year <- substr(alcids$Date, start = 1, stop = 4)
-alcids$Year <- as.numeric(alcids$Year)
-summary(alcids)
+
 ### Get the names of the different models produced
 names(dist.out2)
 #####summary for the Year 2008 model
 summary(dist.out2[["2008"]])
-
+summary(dist.out2[["2007"]])
 #### ***** type = "point"
 # voir pour argument multiplier = 1 pour point d'écoute, multiplier = c(2, 0, 0) par défaur 
 # voir pour Length/MEASURE (ligne juste éteinte pour le moment)
