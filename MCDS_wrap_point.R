@@ -123,12 +123,14 @@
 #'                          pathMCDS="C:/Distance 6",verbose=FALSE)
 #'
 #'summary(dist.out1)
-#'### Run separate analysis for years 2008-2009
+#'### Run separate analysis for years 2007-2008
+#'alcids$Year <- substr(alcids$Date, start = 1, stop = 4)
+#'alcids$Year <- as.numeric(alcids$Year)
 #'dist.out2 <- mcds.wrap(alcids, SMP_EFFORT="WatchLenKm",DISTANCE="Distance",SIZE="Count",
 #'                           units=list(Type="Line",Distance="Perp",Length_units="Kilometers",
 #'                                      Distance_units="Meters",Area_units="Square kilometers"),
 #'                           breaks=c(0,50,100,200,300), estimator=list(c("HN","CO")),
-#'                           lsub=list(Year=c(2008,2009)), split=TRUE, empty="Year",
+#'                           lsub=list(Year=c(2007,2008)), split=TRUE, empty="Year",
 #'                           STR_AREA="STR_AREA",SMP_LABEL="WatchID", 
 #'                           path="c:/temp/distance",
 #'                          pathMCDS="C:/Distance 6",verbose=FALSE)
