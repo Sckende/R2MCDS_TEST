@@ -24,12 +24,18 @@
 #'predicted_hist(x)
 #'
 #' #END
-predicted_hist <- function(model){
-  p <- observation_hist(model[['input_data']][['observations']], count='SIZE', dist.class='DISTANCE',
+predicted_hist_new <- function(model){
+  p <- observation_hist(model[['input_data']][['observations']],
+                        count='SIZE',
+                        dist.class='DISTANCE',
                         keep.class=as.character(unique(sort(as.numeric(model[['input_data']][['observations']]$DISTANCE)))),
-                        breaks=model[['input_data']][['breaks']], color='powderblue', ungroup=F,
+                        breaks=model[['input_data']][['breaks']],
+                        color='powderblue',
+                        ungroup=F,
                         rescale=model$detection[['Global']][,'predicted'][1]) +
-    labs(x = 'Distance', y = 'Detection probability')
+    labs(x = 'Distance',
+         y = 'Detection probability',
+         title = sub("\\,.*", "", model[['model_fitting']][['Global']][['Type']])) # Add for more details about the plot
   
   pred.df <- data.frame(x=model$detection[['Global']][,'distance'],y=model$detection[['Global']][,'predicted'])
   p + geom_line(data=pred.df, aes(x=x,y=y), linetype=1, size=1.25)
