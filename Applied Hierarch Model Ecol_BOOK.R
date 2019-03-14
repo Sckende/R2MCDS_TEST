@@ -93,3 +93,37 @@ tmp <- sim.pdata(N = 1000,
                  sigma = 1,
                  keep.all = FALSE,
                  B = 3)
+
+
+#### Package AHMBook ####
+
+install.packages("AHMbook")
+library(AHMbook)
+ls("package:AHMbook")
+?sim.pdata
+
+set.seed(12345)
+simu.data <- sim.pdata(N = 1000,
+                       sigma = 1,
+                       B = 3,
+                       keep.all = TRUE,
+                       show.plot = TRUE)
+
+tmp <- sim.pdata(N = 1000,
+                 sigma = 1,
+                 keep.all = FALSE,
+                 show.plot = FALSE)
+summary(tmp)
+str(tmp)
+
+# Bin the data and tabulate the bin frequencies. Be sure to pad the 0s !
+delta <- 0.5 # Width of distance bins
+B <- 3 # MAx count distance
+dist.breaks <- seq(0, B, delta) # Make the interval cut points
+dclass <- tmp$d %/% delta + 1 # %/% division entiere
+nD <- length(dist.breaks) - 1 # How many intervals do you have
+y.obs <- table(dclass)
+y.padded <- rep(0, nD)
+names(y.padded) <- 1:nD
+y.padded[names(y.obs)] <- y.obs
+y.obs <- y.padded
