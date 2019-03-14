@@ -299,6 +299,7 @@ mcds.wrap.point <-
       if(!all(empty%in%names(lsub))){stop("Names in empty do not correspond to names in lsub")}
     }
     transects<-dataset
+   # browser()
     if(!is.null(rare)){
       dataset<-dataset[dataset[,names(rare)[1]]==rare[[1]],]
     }else{
@@ -341,7 +342,7 @@ mcds.wrap.point <-
         dataset<-dlply(dataset,names(lsub))
         dataset<-llply(dataset,function(i){rbind(i,transects)})
       }
-    }else{		
+    }else{	
       dataset<-list(rbind(dataset,transects))
     }
     #########################

@@ -97,7 +97,7 @@ tmp <- sim.pdata(N = 1000,
 
 #### Package AHMBook ####
 
-install.packages("AHMbook")
+#install.packages("AHMbook")
 library(AHMbook)
 ls("package:AHMbook")
 ?sim.pdata
@@ -127,3 +127,4 @@ y.padded <- rep(0, nD)
 names(y.padded) <- 1:nD
 y.padded[names(y.obs)] <- y.obs
 y.obs <- y.padded
+

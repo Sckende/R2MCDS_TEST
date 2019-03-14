@@ -7,13 +7,15 @@ set.seed(91)
 library(R2MCDS)
 ### Import and filter data
 data(alcidae)
-df1 <-mcds.filter(alcidae, transect.id = "WatchID",
+df1 <-mcds.filter(alcidae[alcidae$WatchID == -1946788232,], transect.id = "WatchID",
                   distance.field = "Distance",
                   distance.labels = c("A", "B", "C", "D"),
                   distance.midpoints = c(25, 75, 150, 250),
                   effort.field = "WatchLenKm",
-                  lat.field = "LatStart", long.field = "LongStart",
-                  sp.field = "Alpha", date.field = "Date")
+                  lat.field = "LatStart",
+                  long.field = "LongStart",
+                  sp.field = "Alpha",
+                  date.field = "Date")
 ### Run analysis with the MCDS engine.
 ### Here, the 5-minute observation period (WatchID) is used as the sampling unit.
 mod1 <- mcds.wrap.point(df1,
@@ -219,7 +221,8 @@ summary(alcids)
 
 dist.out2 <- mcds.wrap(alcids,
                        SMP_EFFORT="WatchLenKm",
-                       DISTANCE="Distance",SIZE="Count",
+                       DISTANCE="Distance",
+                       SIZE="Count",
                        units=list(Type="Line",
                                   Distance="Perp",
                                   Length_units="Kilometers",
@@ -247,3 +250,232 @@ summary(dist.out2[["2007"]])
 # Uniformiser les exemples entre packages et appendices du papier
 
 # browser() permet de s'arreter dans le code de la fonction# Permet de rentrer dans l'environnement de la fonction
+
+
+################## example with simulated data ########################
+########################### Phase 1 ##################################
+library(AHMbook)
+ls("package:AHMbook")
+?sim.pdata
+###################
+# Data simulation #
+###################
+set.seed(12345)
+simu.data <- sim.pdata(N = 1000,
+                       sigma = 1,
+                       B = 3,
+                       keep.all = TRUE,
+                       show.plot = TRUE)
+
+tmp <- sim.pdata(N = 1000,
+                 sigma = 1,
+                 keep.all = FALSE,
+                 show.plot = FALSE)
+summary(tmp)
+str(tmp)
+
+delta <- 0.5 # Width of distance bins
+B <- 3 # Max count distance
+dist.breaks <- seq(0, B, delta) # Make the interval cut points
+dclass <- tmp$d %/% delta + 1 # %/% division entiere
+nD <- length(dist.breaks) - 1 # How many intervals do you have
+# y.obs <- table(dclass)
+# y.padded <- rep(0, nD)
+# names(y.padded) <- 1:nD
+# y.padded[names(y.obs)] <- y.obs
+# y.obs <- y.padded
+
+###################
+### DF building ###
+###################
+
+# Try to build a dataframe to MCDS analysis
+transect.id <- "pioupiou"
+distance.field <- dclass
+
+effort.field <- 0# ? cause it's the length of transect or watch
+lat.field <- 47.0
+long.field <- -45.24
+sp.field <- "Piou"
+date.field <- "2019-03-15"
+
+piou.data <- data.frame(transect.id = rep(transect.id, 163),
+                        distance.field = distance.field,
+                        effort.field = rep(1, 163),
+                        lat.field = rep(lat.field, 163),
+                        long.field = rep(long.field, 163),
+                        sp.field = rep(sp.field, 163),
+                        date.field = rep(date.field, 163),
+                        Count = rep(1, 163))
+
+piou.data$distance.field[piou.data$distance.field == 1] <- "A"
+piou.data$distance.field[piou.data$distance.field == 2] <- "B"
+piou.data$distance.field[piou.data$distance.field == 3] <- "C"
+piou.data$distance.field[piou.data$distance.field == 4] <- "D"
+piou.data$distance.field[piou.data$distance.field == 5] <- "E"
+piou.data$distance.field[piou.data$distance.field == 6] <- "F"
+
+piou.data$distance.field <- as.factor(piou.data$distance.field)
+
+summary(piou.data)
+
+###################
+###### Model ######
+###################
+
+piou <-mcds.filter(piou.data,
+                  transect.id = "transect.id",
+                  distance.field = "distance.field",
+                  distance.labels <- c("A", "B", "C", "D", "E", "F"),
+                  distance.midpoints <- c(0.25, 0.75, 1.25, 1.75, 2.25, 2.75),
+                  effort.field = "effort.field",
+                  lat.field = "lat.field",
+                  long.field = "long.field",
+                  sp.field = "sp.field",
+                  date.field = "date.field")
+### Run analysis with the MCDS engine.
+### Here, the 5-minute observation period (WatchID) is used as the sampling unit.
+mod1 <- mcds.wrap.point(piou,
+                        SMP_EFFORT="WatchLenKm",
+                        DISTANCE="Distance",
+                        SIZE="Count",
+                        units=list(Type="Point",
+                                   Distance="Radial",
+                                   Length_units="Meters",
+                                   Distance_units="Meters",
+                                   Area_units="Square meters"),
+                        breaks=c(0, 0.5, 1, 1.50, 2, 2.50, 3),
+                        SMP_LABEL="WatchID",
+                        STR_LABEL="STR_LABEL",
+                        STR_AREA="STR_AREA",
+                        estimator=list(c("HN","CO")),
+                        multiplier = c(1, 0, 0),
+                        path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
+                        pathMCDS="C:/Program Files (x86)/Distance 7",
+                        verbose=FALSE)
+
+# File with errors = "log_xxx.tmp"
+mod1
+summary(mod1)
+plot.distanceFit(mod1)
+
+################## example with simulated data ########################
+########################### Phase 2 ##################################
+library(AHMbook)
+ls("package:AHMbook")
+?sim.pdata
+#########################
+# More data simulation  #
+########################
+ll <- list()
+j <- 1:5
+#set.seed(64)
+al <- sample(300:1000, max(j))
+
+for (i in j){
+  # set.seed(i)
+  simu.data <- sim.pdata(N = al[i],
+                         sigma = 1,
+                         B = 3,
+                         keep.all = TRUE,
+                         show.plot = TRUE)
+  print(simu.data$N.real)
+  tmp <- sim.pdata(N = al[i],
+                   sigma = 1,
+                   keep.all = FALSE,
+                   show.plot = FALSE)
+  ll[[i]] <- tmp
+}
+
+
+delta <- 0.5 # Width of distance bins
+B <- 3 # Max count distance
+dist.breaks <- seq(0, B, delta) # Make the interval cut points
+#dclass <- ll[[1]]$d %/% delta + 1 # %/% division entiere
+
+dclass <- lapply(ll, function(i){
+  i$d %/% delta + 1
+})
+
+######## ****************************************** ##################
+
+nD <- length(dist.breaks) - 1 # How many intervals do you have
+# y.obs <- table(dclass)
+# y.padded <- rep(0, nD)
+# names(y.padded) <- 1:nD
+# y.padded[names(y.obs)] <- y.obs
+# y.obs <- y.padded
+
+###################
+### DF building ###
+###################
+
+# Try to build a dataframe to MCDS analysis
+transect.id <- "pioupiou"
+distance.field <- dclass
+
+effort.field <- 0# ? cause it's the length of transect or watch
+lat.field <- 47.0
+long.field <- -45.24
+sp.field <- "Piou"
+date.field <- "2019-03-15"
+
+piou.data <- data.frame(transect.id = rep(transect.id, 163),
+                        distance.field = distance.field,
+                        effort.field = rep(1, 163),
+                        lat.field = rep(lat.field, 163),
+                        long.field = rep(long.field, 163),
+                        sp.field = rep(sp.field, 163),
+                        date.field = rep(date.field, 163),
+                        Count = rep(1, 163))
+
+piou.data$distance.field[piou.data$distance.field == 1] <- "A"
+piou.data$distance.field[piou.data$distance.field == 2] <- "B"
+piou.data$distance.field[piou.data$distance.field == 3] <- "C"
+piou.data$distance.field[piou.data$distance.field == 4] <- "D"
+piou.data$distance.field[piou.data$distance.field == 5] <- "E"
+piou.data$distance.field[piou.data$distance.field == 6] <- "F"
+
+piou.data$distance.field <- as.factor(piou.data$distance.field)
+
+summary(piou.data)
+
+###################
+###### Model ######
+###################
+
+piou <-mcds.filter(piou.data,
+                   transect.id = "transect.id",
+                   distance.field = "distance.field",
+                   distance.labels <- c("A", "B", "C", "D", "E", "F"),
+                   distance.midpoints <- c(0.25, 0.75, 1.25, 1.75, 2.25, 2.75),
+                   effort.field = "effort.field",
+                   lat.field = "lat.field",
+                   long.field = "long.field",
+                   sp.field = "sp.field",
+                   date.field = "date.field")
+### Run analysis with the MCDS engine.
+### Here, the 5-minute observation period (WatchID) is used as the sampling unit.
+mod1 <- mcds.wrap.point(piou,
+                        SMP_EFFORT="WatchLenKm",
+                        DISTANCE="Distance",
+                        SIZE="Count",
+                        units=list(Type="Point",
+                                   Distance="Radial",
+                                   Length_units="Meters",
+                                   Distance_units="Meters",
+                                   Area_units="Square meters"),
+                        breaks=c(0, 0.5, 1, 1.50, 2, 2.50, 3),
+                        SMP_LABEL="WatchID",
+                        STR_LABEL="STR_LABEL",
+                        STR_AREA="STR_AREA",
+                        estimator=list(c("HN","CO")),
+                        multiplier = c(1, 0, 0),
+                        path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
+                        pathMCDS="C:/Program Files (x86)/Distance 7",
+                        verbose=FALSE)
+
+# File with errors = "log_xxx.tmp"
+mod1
+summary(mod1)
+plot.distanceFit(mod1)
