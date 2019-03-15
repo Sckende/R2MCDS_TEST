@@ -391,59 +391,58 @@ for (i in j){
 delta <- 0.5 # Width of distance bins
 B <- 3 # Max count distance
 dist.breaks <- seq(0, B, delta) # Make the interval cut points
-#dclass <- ll[[1]]$d %/% delta + 1 # %/% division entiere
-
 dclass <- lapply(ll, function(i){
   i$d %/% delta + 1
 })
-
-######## ****************************************** ##################
-
 nD <- length(dist.breaks) - 1 # How many intervals do you have
-# y.obs <- table(dclass)
-# y.padded <- rep(0, nD)
-# names(y.padded) <- 1:nD
-# y.padded[names(y.obs)] <- y.obs
-# y.obs <- y.padded
 
 ###################
 ### DF building ###
 ###################
 
 # Try to build a dataframe to MCDS analysis
-transect.id <- "pioupiou"
-distance.field <- dclass
+piou.data <- data.frame()
+for(i in 1:length(ll)){
+  transect.id <- rep(paste("piou", i, sep = ""), length(dclass[[i]]))
+  d.field <- dclass[[i]]
+  
+  effort.field <- rep(1, length(dclass[[i]])) # ? cause it's the length of transect or watch
+  lat.field <- rep(47.0, length(dclass[[i]]))
+  long.field <- rep((-45.24 + i), length(dclass[[i]]))
+  sp.field <- rep("Piou", length(dclass[[i]]))
+  date.field <- rep("2019-03-15", length(dclass[[i]])) 
+  Count <- rep(1, length(dclass[[i]]))
+  real.abun <- rep(ll[[i]]$N.real, length(dclass[[i]]))
+  
+  dt <- data.frame(transect.id ,
+                          d.field,
+                          effort.field,
+                          lat.field,
+                          long.field,
+                          sp.field,
+                          date.field,
+                          Count,
+                   real.abun)
+  piou.data <- rbind(piou.data, dt)
+  
+}
 
-effort.field <- 0# ? cause it's the length of transect or watch
-lat.field <- 47.0
-long.field <- -45.24
-sp.field <- "Piou"
-date.field <- "2019-03-15"
-
-piou.data <- data.frame(transect.id = rep(transect.id, 163),
-                        distance.field = distance.field,
-                        effort.field = rep(1, 163),
-                        lat.field = rep(lat.field, 163),
-                        long.field = rep(long.field, 163),
-                        sp.field = rep(sp.field, 163),
-                        date.field = rep(date.field, 163),
-                        Count = rep(1, 163))
-
-piou.data$distance.field[piou.data$distance.field == 1] <- "A"
-piou.data$distance.field[piou.data$distance.field == 2] <- "B"
-piou.data$distance.field[piou.data$distance.field == 3] <- "C"
-piou.data$distance.field[piou.data$distance.field == 4] <- "D"
-piou.data$distance.field[piou.data$distance.field == 5] <- "E"
-piou.data$distance.field[piou.data$distance.field == 6] <- "F"
-
+# Convert numerical distance value to categorical with letters
+piou.data$distance.field <- LETTERS[piou.data$d.field]
 piou.data$distance.field <- as.factor(piou.data$distance.field)
 
 summary(piou.data)
 
+# Real total abundance
+
+real.N <- sum(tapply(piou.data$real.abun, piou.data$transect.id, unique))
+
+real.per.meter <- real.N / (3.141593 * B^2 * length(ll))
+
 ###################
 ###### Model ######
 ###################
-
+library(R2MCDS)
 piou <-mcds.filter(piou.data,
                    transect.id = "transect.id",
                    distance.field = "distance.field",
@@ -478,4 +477,5 @@ mod1 <- mcds.wrap.point(piou,
 # File with errors = "log_xxx.tmp"
 mod1
 summary(mod1)
+real.per.meter
 plot.distanceFit(mod1)
