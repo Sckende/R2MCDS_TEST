@@ -368,7 +368,7 @@ ls("package:AHMbook")
 # More data simulation  #
 ########################
 ll <- list()
-j <- 1:5
+j <- 1:100
 #set.seed(64)
 al <- sample(300:1000, max(j))
 
@@ -468,7 +468,8 @@ mod1 <- mcds.wrap.point(piou,
                         SMP_LABEL="WatchID",
                         STR_LABEL="STR_LABEL",
                         STR_AREA="STR_AREA",
-                        estimator=list(c("HN","CO")),
+                        #estimator=list(c("HN","CO")),
+                        estimator = NULL,
                         multiplier = c(1, 0, 0),
                         path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
                         pathMCDS="C:/Program Files (x86)/Distance 7",
