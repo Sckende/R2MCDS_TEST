@@ -468,8 +468,8 @@ mod1 <- mcds.wrap.point(piou,
                         SMP_LABEL="WatchID",
                         STR_LABEL="STR_LABEL",
                         STR_AREA="STR_AREA",
-                        #estimator=list(c("HN","CO")),
-                        estimator = NULL,
+                        estimator=list(c("HN","CO")),
+                        #estimator = NULL,
                         multiplier = c(1, 0, 0),
                         path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
                         pathMCDS="C:/Program Files (x86)/Distance 7",
@@ -480,3 +480,59 @@ mod1
 summary(mod1)
 real.per.meter
 plot.distanceFit(mod1)
+
+################## example with Distance data ########################
+############## Project 1 - Example 1 - Line transects ################
+
+library(R2MCDS)
+setwd("C:/Users/HP_9470m/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
+list.files()
+
+ex1 <- read.table("DISTANCE_Example1.txt", h = T, sep = "\t", dec = ",")
+ex1 <- ex1[, 1:6]
+ex1$sp <- "Piaf"
+ex1$lat <- 45
+ex1$long <- 90
+ex1$date <- "2019-06-23"
+colnames(ex1)[colnames(ex1) == "Cluster_size"] <- "Count"
+
+summary(ex1)
+utils::View(ex1)
+
+ex1 <- na.omit(ex1)
+
+ex1.1 <- mcds.filter(ex1,
+                    transect.id = "Transect",
+                    distance.field = "Distance",
+                    distance.labels <- "A",
+                    distance.midpoints <- max(ex1$Distance)/2,
+                    effort.field = "Length",
+                    lat.field = "lat",
+                    long.field = "long",
+                    sp.field = "sp",
+                    date.field = "date"
+                    ) 
+
+mod1 <- mcds.wrap(ex1.1,
+                        SMP_EFFORT="Length",
+                        DISTANCE="Distance",
+                        SIZE="Cluster_size",
+                        units=list(Type="Line",
+                                   Distance="Perp",
+                                   Length_units="Kilometers",
+                                   Distance_units="Meters",
+                                   Area_units="Square kilometers"),
+                        #breaks=c(0,50,100,200,300),
+                        SMP_LABEL="Transect",
+                        STR_LABEL="STR_LABEL",
+                        STR_AREA="STR_AREA",
+                        estimator=list(c("HN","CO")),
+                        multiplier = c(1, 0, 0),
+                        path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
+                        pathMCDS="C:/Program Files (x86)/Distance 7",
+                        verbose=FALSE)
+
+# File with errors = "log_xxx.tmp"
+mod1
+summary(mod1)
+predicted_hist_new(mod1)
