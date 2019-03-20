@@ -481,58 +481,65 @@ summary(mod1)
 real.per.meter
 plot.distanceFit(mod1)
 
-################## example with Distance data ########################
-############## Project 1 - Example 1 - Line transects ################
-
+################################### example with Distance data ##############################
+################### Project 1 - Amakihi analysis -- > Simple test model #####################
 library(R2MCDS)
-setwd("C:/Users/HP_9470m/OneDrive - Université de Moncton/Doc doc doc/Ph.D. - ANALYSES/R analysis/Data")
+setwd("C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/DISTANCE 7.2")
 list.files()
 
-ex1 <- read.table("DISTANCE_Example1.txt", h = T, sep = "\t", dec = ",")
-ex1 <- ex1[, 1:6]
-ex1$sp <- "Piaf"
-ex1$lat <- 45
-ex1$long <- 90
-ex1$date <- "2019-06-23"
-colnames(ex1)[colnames(ex1) == "Cluster_size"] <- "Count"
+amak <- read.table("Amakihi.txt", h = T, sep = "\t")
+head(amak)
+summary(amak)
+amak <- na.omit(amak)
 
-summary(ex1)
-utils::View(ex1)
+amak$sp <- "Honeycreeper"
+amak$lat <- NA 
+amak$long <- NA
 
-ex1 <- na.omit(ex1)
+summary(amak)
+utils::View(amak)
 
-ex1.1 <- mcds.filter(ex1,
-                    transect.id = "Transect",
-                    distance.field = "Distance",
-                    distance.labels <- "A",
-                    distance.midpoints <- max(ex1$Distance)/2,
-                    effort.field = "Length",
+amak.1 <- mcds.filter(amak,
+                    transect.id = "point_ID",
+                    distance.field = "Radial_distance",
+                    distance.labels <- c("A", "B", "C", "D", "E"),
+                    distance.midpoints <- c(25, 75, 125, 175, 225),
+                    effort.field = "Survey_effort",
                     lat.field = "lat",
                     long.field = "long",
                     sp.field = "sp",
                     date.field = "date"
                     ) 
 
-mod1 <- mcds.wrap(ex1.1,
-                        SMP_EFFORT="Length",
-                        DISTANCE="Distance",
-                        SIZE="Cluster_size",
-                        units=list(Type="Line",
-                                   Distance="Perp",
-                                   Length_units="Kilometers",
-                                   Distance_units="Meters",
-                                   Area_units="Square kilometers"),
-                        #breaks=c(0,50,100,200,300),
-                        SMP_LABEL="Transect",
-                        STR_LABEL="STR_LABEL",
-                        STR_AREA="STR_AREA",
-                        estimator=list(c("HN","CO")),
-                        multiplier = c(1, 0, 0),
-                        path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
-                        pathMCDS="C:/Program Files (x86)/Distance 7",
-                        verbose=FALSE)
+mod1 <- mcds.wrap(amak,
+                  path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
+                  pathMCDS="C:/Program Files (x86)/Distance 7",
+                  STR_LABEL="date",
+                  STR_AREA="region_ID",
+                  SMP_LABEL="point_ID",
+                  units=list(Type="Point",
+                             Distance="Radial",
+                             Length_units="Kilometers",
+                             Distance_units="Kilometers",
+                             Area_units="Square kilometers"),
+                  SMP_EFFORT="Survey_effort",
+                  DISTANCE="Radial_distance",
+                  SIZE="Count",
+                  breaks=seq(0, 250, 10),
+                  #covariates = c("obs", "MAS", "HAS"),
+                  #factor = "a factor giving the name of factors to be used in analysis",
+                  lsub = list(unique(amak$date)),
+                  #stratum = TRUE,
+                  split = TRUE,
+                  #rare = "used when a species has few observations to estimate a detection function",
+                  #period = "vector of characters of length 2 containing the extreme dates for which the analysis should be restricted",
+                  #detection = "see help file",
+                  #monotone = "Strict",
+                  estimator=list(c("HN","CO")),
+                  multiplier = c(1, 0, 0),
+                  #empty = "determine how empty transects are to be selected in the analysis",
+                  verbose=FALSE)
 
 # File with errors = "log_xxx.tmp"
-mod1
 summary(mod1)
-predicted_hist_new(mod1)
+plot.distanceFit(mod1)
