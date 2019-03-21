@@ -289,7 +289,7 @@ mcds.wrap <-
       }
     }
     transects[,DISTANCE]<-""
-    
+    #browser()
     ######################## add-on
     if(!is.null(lsub) && split){
       if(!is.null(empty)){			
@@ -356,6 +356,7 @@ mcds.wrap <-
       #######################################################
       ### input
       
+      #browser()
       opts2<-list()
       opts2["Options;"]<-""
       opts2["Type="] <- paste(units$Type,";",sep="")
