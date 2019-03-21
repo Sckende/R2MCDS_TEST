@@ -18,12 +18,12 @@ df1 <-mcds.filter(alcidae[alcidae$WatchID == -1946788232,], transect.id = "Watch
                   date.field = "Date")
 ### Run analysis with the MCDS engine.
 ### Here, the 5-minute observation period (WatchID) is used as the sampling unit.
-mod1 <- mcds.wrap.point(df1,
+mod1 <- mcds.wrap(df1,
                   SMP_EFFORT="WatchLenKm",
                   DISTANCE="Distance",
                   SIZE="Count",
-                  units=list(Type="Point",
-                             Distance="Radial",
+                  units=list(Type="Line",
+                             Distance="Perp",
                              Length_units="Kilometers",
                              Distance_units="Meters",
                              Area_units="Square kilometers"),
@@ -484,6 +484,7 @@ plot.distanceFit(mod.piou)
 
 ################################### example with Distance data ##############################
 ################### Project 1 - Amakihi analysis -- > Simple test model #####################
+###################### *** Correct example **** ###########################
 library(R2MCDS)
 setwd("C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/DISTANCE 7.2")
 list.files()
@@ -536,7 +537,7 @@ mod1 <- mcds.wrap(amak,
                   SMP_EFFORT="Survey_effort",
                   DISTANCE="Radial_distance",
                   SIZE="Count",
-                  breaks=seq(0, 250, 10),
+                  breaks=seq(0, 250, 50),
                   #covariates = c("obs", "MAS", "HAS"),
                   #factor = "a factor giving the name of factors to be used in analysis",
                   #lsub = list(unique(amak$date)),
@@ -553,4 +554,117 @@ mod1 <- mcds.wrap(amak,
 
 # File with errors = "log_xxx.tmp"
 summary(mod1)
+x11()
 plot.distanceFit(mod1)
+
+################################### example with Distance data ##############################
+################### Project 2 - Transect Line example analysis #####################
+######################## *** Correct example *** ##################################
+library(R2MCDS)
+setwd("C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/DISTANCE 7.2")
+list.files()
+
+line <- read.table("Line_Transect.txt", h = T, sep = "\t", dec = ",")
+head(line)
+summary(line)
+line <- na.omit(line)
+
+line$sp <- "sp"
+line$lat <- 43 
+line$long <- 90
+
+# Conversion of the metric distance to letter categories
+line$Distance_L[line$Perp_distance < 5] <- "A" 
+line$Distance_L[line$Perp_distance >= 5 & line$Perp_distance < 10] <- "B" 
+line$Distance_L[line$Perp_distance >= 10 & line$Perp_distance < 15] <- "C"
+line$Distance_L[line$Perp_distance >= 15 & line$Perp_distance < 20] <- "D"
+line$Distance_L[line$Perp_distance >= 20 & line$Perp_distance < 25] <- "E"
+line$Distance_L[line$Perp_distance >= 25 & line$Perp_distance < 30] <- "F"
+line$Distance_L[line$Perp_distance >= 30 & line$Perp_distance < 35] <- "G"
+line$Distance_L[line$Perp_distance >= 35 & line$Perp_distance < 40] <- "H"
+
+line$Distance_L <- as.factor(line$Distance_L)
+
+line$date <- "2005-06-07"
+line$Count <- 1
+
+summary(line)
+utils::View(line)
+
+line.1 <- mcds.filter(line,
+                      transect.id = "ID_transect",
+                      distance.field = "Distance_L", #Use the distance variable with letters here
+                      distance.labels <- c("A", "B", "C", "D", "E", "F", "G", "H"),
+                      distance.midpoints <- c(2.5, 7.5, 12.5, 17.5, 22.5, 27.5, 32.5, 37.5),
+                      effort.field = "Line_length",
+                      lat.field = "lat",
+                      long.field = "long",
+                      sp.field = "sp",
+                      date.field = "date"
+) 
+
+mod.line <- mcds.wrap(line,
+                  path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
+                  pathMCDS="C:/Program Files (x86)/Distance 7",
+                  STR_LABEL= "Label",
+                  STR_AREA="Area",
+                  SMP_LABEL="ID_transect",
+                  units=list(Type="Line",
+                             Distance="Perp",
+                             Length_units="Kilometers",
+                             Distance_units="Meters",
+                             Area_units="Square kilometers"),
+                  SMP_EFFORT="Line_length",
+                  DISTANCE="Perp_distance", # Need to use numerical value if original database
+                  SIZE="Cluster_size",
+                  breaks=seq(0, 40, 5),
+                  #covariates = NA,
+                  #factor = "a factor giving the name of factors to be used in analysis",
+                  #lsub = NA,
+                  #stratum = TRUE,
+                  #split = TRUE,
+                  #rare = "used when a species has few observations to estimate a detection function",
+                  #period = "vector of characters of length 2 containing the extreme dates for which the analysis should be restricted",
+                  #detection = "see help file",
+                  #monotone = "Strict",
+                  estimator=list(c("HN","CO")),
+                  multiplier = c(1, 0, 0),
+                  #empty = "determine how empty transects are to be selected in the analysis",
+                  verbose=FALSE)
+summary(mod.line)
+#x11()
+plot.distanceFit(mod.line)
+
+
+mod.line.wrap <- mcds.wrap(line.1,
+                      path="C:/Users/HP_9470m/OneDrive - Université de Moncton/GC job - R2MCDS/R_examples",
+                      pathMCDS="C:/Program Files (x86)/Distance 7",
+                      STR_LABEL= "Label",
+                      STR_AREA="Area",
+                      SMP_LABEL="WatchID",
+                      units=list(Type="Line",
+                                 Distance="Perp",
+                                 Length_units="Kilometers",
+                                 Distance_units="Meters",
+                                 Area_units="Square kilometers"),
+                      SMP_EFFORT="WatchLenKm",
+                      DISTANCE="Distance",
+                      SIZE="Cluster_size",
+                      breaks=seq(0, 40, 5),
+                      #covariates = NA,
+                      #factor = "a factor giving the name of factors to be used in analysis",
+                      #lsub = NA,
+                      #stratum = TRUE,
+                      #split = TRUE,
+                      #rare = "used when a species has few observations to estimate a detection function",
+                      #period = "vector of characters of length 2 containing the extreme dates for which the analysis should be restricted",
+                      #detection = "see help file",
+                      #monotone = "Strict",
+                      estimator=list(c("HN","CO")),
+                      multiplier = c(1, 0, 0),
+                      #empty = "determine how empty transects are to be selected in the analysis",
+                      verbose=FALSE)
+
+summary(mod.line.wrap)
+#x11()
+plot.distanceFit(mod.line.wrap)
