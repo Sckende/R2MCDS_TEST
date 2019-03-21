@@ -212,12 +212,12 @@ mcds.wrap.point <-
     
     if(toupper(units$Distance_units)%in%c("CENTIMETERS", "METERS", "KILOMETERS", "MILES", 
                                           "INCHES", "FEET", "YARDS", "NAUTICAL MILES")==FALSE)
-      stop("Distance units must be one of thse: 'Centimeters', 'Meters', 'Kilometers', 'Miles', 'Inches', 
+      stop("Distance units must be one of these: 'Centimeters', 'Meters', 'Kilometers', 'Miles', 'Inches', 
            'Feet', 'Yards', Or 'Nautical Miles'")  
     
     if(toupper(units$Area_units)%in%c("SQUARE CENTIMETERS", "SQUARE METERS", "SQUARE KILOMETERS", "SQUARE MILES", 
                                       "SQUARE INCHES", "SQUARE FEET", "SQUARE YARDS", "HECTARES")==FALSE)
-      stop("Distance units must be one of thse: 'Centimeters', 'Meters', 'Kilometers', 'Miles', 'Inches', 
+      stop("Distance units must be one of these: 'Centimeters', 'Meters', 'Kilometers', 'Miles', 'Inches', 
            'Feet', 'Yards', Or 'Nautical Miles'")  
     
     #get the list of arguments
