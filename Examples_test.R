@@ -432,6 +432,7 @@ piou.data$distance.field <- LETTERS[piou.data$d.field]
 piou.data$distance.field <- as.factor(piou.data$distance.field)
 
 summary(piou.data)
+utils::View(piou.data)
 
 # Real total abundance
 
@@ -455,7 +456,7 @@ piou <-mcds.filter(piou.data,
                    date.field = "date.field")
 ### Run analysis with the MCDS engine.
 ### Here, the 5-minute observation period (WatchID) is used as the sampling unit.
-mod1 <- mcds.wrap.point(piou,
+mod.piou <- mcds.wrap.point(piou,
                         SMP_EFFORT="WatchLenKm",
                         DISTANCE="Distance",
                         SIZE="Count",
@@ -476,10 +477,10 @@ mod1 <- mcds.wrap.point(piou,
                         verbose=FALSE)
 
 # File with errors = "log_xxx.tmp"
-mod1
-summary(mod1)
+mod.piou
+summary(mod.piou)
 real.per.meter
-plot.distanceFit(mod1)
+plot.distanceFit(mod.piou)
 
 ################################### example with Distance data ##############################
 ################### Project 1 - Amakihi analysis -- > Simple test model #####################
@@ -493,17 +494,27 @@ summary(amak)
 amak <- na.omit(amak)
 
 amak$sp <- "Honeycreeper"
-amak$lat <- NA 
-amak$long <- NA
+amak$lat <- 43 
+amak$long <- 90
+
+# Conversion of the metric distance to letter categories
+amak$Distance_L[amak$Radial_distance < 50] <- "A" 
+amak$Distance_L[amak$Radial_distance >= 50 & amak$Radial_distance < 100] <- "B" 
+amak$Distance_L[amak$Radial_distance >= 100 & amak$Radial_distance < 150] <- "C"
+amak$Distance_L[amak$Radial_distance >= 150 & amak$Radial_distance < 200] <- "D"
+amak$Distance_L[amak$Radial_distance >= 200 & amak$Radial_distance < 250] <- "E"
+amak$Distance_L[amak$Radial_distance >= 250 & amak$Radial_distance < 300] <- "F"
+
+amak$Distance_L <- as.factor(amak$Distance_L)
 
 summary(amak)
 utils::View(amak)
 
 amak.1 <- mcds.filter(amak,
                     transect.id = "point_ID",
-                    distance.field = "Radial_distance",
-                    distance.labels <- c("A", "B", "C", "D", "E"),
-                    distance.midpoints <- c(25, 75, 125, 175, 225),
+                    distance.field = "Distance_L", #Use the distance variable with letters here
+                    distance.labels <- c("A", "B", "C", "D", "E", "F"),
+                    distance.midpoints <- c(25, 75, 125, 175, 225, 275),
                     effort.field = "Survey_effort",
                     lat.field = "lat",
                     long.field = "long",
@@ -519,18 +530,18 @@ mod1 <- mcds.wrap(amak,
                   SMP_LABEL="point_ID",
                   units=list(Type="Point",
                              Distance="Radial",
-                             Length_units="Kilometers",
-                             Distance_units="Kilometers",
-                             Area_units="Square kilometers"),
+                             Length_units="Meters",
+                             Distance_units="Meters",
+                             Area_units="Hectares"),
                   SMP_EFFORT="Survey_effort",
                   DISTANCE="Radial_distance",
                   SIZE="Count",
                   breaks=seq(0, 250, 10),
                   #covariates = c("obs", "MAS", "HAS"),
                   #factor = "a factor giving the name of factors to be used in analysis",
-                  lsub = list(unique(amak$date)),
+                  #lsub = list(unique(amak$date)),
                   #stratum = TRUE,
-                  split = TRUE,
+                  #split = TRUE,
                   #rare = "used when a species has few observations to estimate a detection function",
                   #period = "vector of characters of length 2 containing the extreme dates for which the analysis should be restricted",
                   #detection = "see help file",
